@@ -1,0 +1,15 @@
+nix develop .#
+
+# idf.py set-target esp32c3_serial_via_JTAG build
+idf.py set-target esp32c3 build
+ls /home/nix/devenv/ESP32DroneBridge/build/
+idf.py flash
+
+
+
+# esptool.py  -p /dev/ttyACM0  erase_flash
+
+cp esp32c3_serial_via_JTAG sdkconfig
+idf.py fullclean
+idf.py build
+idf.py flash
