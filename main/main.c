@@ -25,6 +25,7 @@
 #include <lwip/apps/netbiosns.h>
 
 #include "freertos/event_groups.h"
+#include "ppm_decoder.h"
 #include "esp_mac.h"
 #include "esp_wifi.h"
 #include "esp_wifi_types.h"
@@ -664,6 +665,10 @@ void set_reset_trigger() {
 
 /**
  * For simple debugging when serial via JTAG is enabled. Printed once control module configured USB serial socket.
+    // Init DroneBridge params with default values
+    db_param_init_parameters();
+    db_param_ppm_enabled.value.db_param_u8.value = false;
+    db_param_ppm_gpio.value.db_param_u8.value = 4;
  * Write settings to JTAG/USB, so we can debug issues better
  */
 void db_jtag_serial_info_print() {
@@ -745,6 +750,17 @@ void app_main() {
         netbiosns_set_name("dronebridge");
     }
     ESP_ERROR_CHECK(init_fs());
+    
+    // Initialize PPM decoder if enabled
+    if (DB_PARAM_PPM_ENABLED) {
+        esp_err_t ppm_init_result = ppm_decoder_init(DB_PARAM_PPM_GPIO);
+        if (ppm_init_result != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to initialize PPM decoder: %s", esp_err_to_name(ppm_init_result));
+        } else {
+            ESP_LOGI(TAG, "PPM decoder initialized on GPIO %d", DB_PARAM_PPM_GPIO);
+        }
+    }
+    
     db_start_control_module();
 
     if (DB_PARAM_RADIO_MODE != DB_WIFI_MODE_ESPNOW_AIR && DB_PARAM_RADIO_MODE != DB_WIFI_MODE_ESPNOW_GND &&

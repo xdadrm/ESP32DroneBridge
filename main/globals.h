@@ -20,7 +20,8 @@
 #ifndef DB_ESP32_GLOBALS_H
 #define DB_ESP32_GLOBALS_H
 
-#include <freertos/event_groups.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 #include <esp_wifi_types.h>
 #include "db_esp32_control.h"
 

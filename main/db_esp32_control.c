@@ -44,6 +44,8 @@
 #include "main.h"
 #include "db_serial.h"
 #include "db_esp_now.h"
+#include "ppm_decoder.h"
+#include "ppm_mavlink.h"
 
 #define TAG "DB_CONTROL"
 
@@ -725,6 +727,11 @@ _Noreturn void control_module_udp_tcp() {
         read_process_serial_link(tcp_clients, &transparent_buff_pos, &msp_ltm_buff_pos, msp_message_buffer,
                                  serial_buffer,
                                  &db_msp_ltm_port);
+
+        // PPM processing - send RC overrides at 25Hz
+        if (DB_PARAM_PPM_ENABLED && delay_timer_cnt % 240 == 0) { // Every 240 loops ≈ 25Hz
+            send_rc_channels_override(tcp_clients, udp_conn_list);
+        }
 
         if (delay_timer_cnt == 6000) {
             // all actions are non-blocking so allow some delay so that the IDLE task of FreeRTOS and the watchdog can run

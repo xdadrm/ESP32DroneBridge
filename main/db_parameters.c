@@ -50,6 +50,7 @@ db_parameter_t db_param_ssid, db_param_pass, db_param_wifi_ap_ip, db_param_wifi_
 
 /* ---------- From here with increasing param_index all parameters that are also available via MAVLink ---------- */
 
+
 /**
  * never change this value while the ESP32 is running, will likely lead to a crash.
  * Assign it during startup when received from storage. Can therefore only be changed via reboot and DB_WIFI_MODE_DESIGNATED
@@ -415,6 +416,48 @@ db_parameter_t db_param_rssi_dbm = {
 };
 
 /**
+ * Enable/disable PPM input
+ */
+db_parameter_t db_param_ppm_enabled = {
+        .db_name = "ppm_enabled",
+        .type = UINT8,
+        .mav_t = {
+                .param_name = "PPM_ENABLED",
+                .param_index = 17,
+                .param_type = MAV_PARAM_TYPE_UINT8,
+        },
+        .value = {
+                .db_param_u8 = {
+                        .value = false,
+                        .default_value = false,
+                        .min = false,
+                        .max = true,
+                }
+        }
+};
+
+/**
+ * GPIO pin for PPM input
+ */
+db_parameter_t db_param_ppm_gpio = {
+        .db_name = "ppm_gpio",
+        .type = UINT8,
+        .mav_t = {
+                .param_name = "PPM_GPIO_PIN",
+                .param_index = 18,
+                .param_type = MAV_PARAM_TYPE_UINT8,
+        },
+        .value = {
+                .db_param_u8 = {
+                        .value = 4,
+                        .default_value = 4,
+                        .min = 0,
+                        .max = SOC_GPIO_IN_RANGE_MAX,
+                }
+        }
+};
+
+/**
  * Array containing all references to the DB parameters assigned with db_param_init_parameters()
  */
 db_parameter_t *db_params[DB_PARAM_TOTAL_NUM] = {NULL};
@@ -518,7 +561,9 @@ void db_param_init_parameters() {
             &db_param_ltm_per_packet,
             &db_param_dis_radio_armed,
             &db_param_udp_client_port,
-            &db_param_rssi_dbm
+            &db_param_rssi_dbm,
+            &db_param_ppm_enabled,
+            &db_param_ppm_gpio
     };
     memcpy(db_params, db_params_l, sizeof(db_params_l));
 }

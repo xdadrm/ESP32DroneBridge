@@ -8,7 +8,9 @@ set(SRCS
         db_esp_now.c
         db_serial.c
         db_mavlink_msgs.c
-        db_parameters.c)
+        db_parameters.c
+        ppm_decoder.c
+        ppm_mavlink.c)
 
 if(CONFIG_BT_ENABLED)
     list(APPEND SRCS db_ble.c)
